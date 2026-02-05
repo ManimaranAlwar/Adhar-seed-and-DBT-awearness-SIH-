@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DBT Awareness & Verification Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    .fade-in { animation: fadeIn .35s ease forwards; opacity: 0; }
+    .slide-up { animation: slideUp .4s ease forwards; transform: translateY(8px); opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes slideUp { to { transform: translateY(0); opacity: 1; } }
+    .pulse { box-shadow: 0 0 0 0 rgba(16,185,129,.55); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(16,185,129,.55)} 70%{box-shadow:0 0 0 15px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
+    /* Custom scrollbar for side menu/content */
+    .nice-scroll::-webkit-scrollbar{width:10px;height:10px}
+    .nice-scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#22c55e,#0ea5e9);border-radius:8px}
+    .nice-scroll::-webkit-scrollbar-track{background:#e2e8f0;border-radius:8px}
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-sky-50 via-emerald-50 to-white text-slate-800">
+  <!-- Demo safety banner -->
+  <div class="w-full bg-emerald-600 text-white text-center text-sm py-2 px-4">
+    Demo: Please don’t enter personal details. OTP and uploads here are simulated for awareness only.
+  </div>
+
+  <!-- App Shell -->
+  <div class="flex min-h-[calc(100vh-40px)]">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 shrink-0 bg-white/80 backdrop-blur border-r border-slate-200/80 hidden md:flex flex-col">
+      <div class="p-5 flex items-center gap-3">
+        <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 text-white inline-flex items-center justify-center">
+          <!-- shield-leaf -->
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9.5 12.5c1.5-3 4.5-4 6-4-1 2-2 5-6 6 0 0-.5-1 .5-2z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-extrabold text-slate-900">DBT Dashboard</p>
+          <p class="text-xs text-slate-600">Students • India</p>
+        </div>
+      </div>
+
+      <nav class="px-3 pb-4 pt-1 flex-1 overflow-auto nice-scroll">
+        <ul class="space-y-1">
+          <li><button data-route="home" class="navlink w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-700">
+            <span class="h-8 w-8 rounded-lg bg-sky-100 text-sky-700 inline-flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7v11H3V10l9-7z"/></svg>
+            </span>
+            Home
+          </button></li>
+          <li><button data-route="how" class="navlink w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-700">
+            <span class="h-8 w-8 rounded-lg bg-sky-100 text-sky-700 inline-flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zM4 11h10v2H4zM4 16h16v2H4z"/></svg>
+            </span>
+            How It Works
+          </button></li>
+          <li><button data-route="verify" class="navlink w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-700">
+            <span class="h-8 w-8 rounded-lg bg-indigo-100 text-indigo-700 inline-flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm3 18h4v-1h-4v1z"/></svg>
+            </span>
+            Verify Now
+          </button></li>
+          <li><button data-route="faqs" class="navlink w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-700">
+            <span class="h-8 w-8 rounded-lg bg-sky-100 text-sky-700 inline-flex items-center justify-center">?</span>
+            FAQs
+          </button></li>
+          <li><button data-route="rewards" class="navlink w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-700">
+            <span class="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-700 inline-flex items-center justify-center">🌿</span>
+            Green Rewards
+          </button></li>
+          <li><button data-route="contact" class="navlink w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-sky-50 text-slate-700">
+            <span class="h-8 w-8 rounded-lg bg-slate-100 text-slate-700 inline-flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM8 10h8M8 14h5"/></svg>
+            </span>
+            Contact Us
+          </button></li>
+        </ul>
+
+        <div class="mt-6 p-3 rounded-2xl bg-gradient-to-br from-emerald-50 to-sky-50 border border-emerald-100">
+          <p class="text-sm font-semibold text-slate-900">Your Green Progress</p>
+          <div class="mt-2 h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div id="sidebarProgress" class="h-full w-0 bg-gradient-to-r from-emerald-500 to-sky-500 transition-all"></div>
+          </div>
+          <div class="mt-2 text-xs text-slate-600"><span id="sidebarProgressLabel">0/3 steps</span> to claim seed kit</div>
+        </div>
+      </nav>
+
+      <div class="p-4 border-t border-slate-200">
+        <button data-route="verify" class="navlink w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+          Start Verification
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile top bar -->
+    <header class="md:hidden w-full bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 text-white inline-flex items-center justify-center">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4z" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-extrabold text-slate-900 leading-tight">DBT Dashboard</p>
+            <p class="text-[11px] text-slate-600">Awareness • Verify • Rewards</p>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="rounded-xl px-3 py-2 bg-sky-600 text-white">Menu</button>
+      </div>
+      <div id="mobileMenu" class="hidden px-3 pb-3">
+        <div class="grid grid-cols-2 gap-2">
+          <button data-route="home" class="navlink px-3 py-2 rounded-xl bg-sky-50 text-slate-800">Home</button>
+          <button data-route="how" class="navlink px-3 py-2 rounded-xl bg-sky-50 text-slate-800">How It Works</button>
+          <button data-route="verify" class="navlink px-3 py-2 rounded-xl bg-sky-50 text-slate-800">Verify Now</button>
+          <button data-route="faqs" class="navlink px-3 py-2 rounded-xl bg-sky-50 text-slate-800">FAQs</button>
+          <button data-route="rewards" class="navlink px-3 py-2 rounded-xl bg-sky-50 text-slate-800">Green Rewards</button>
+          <button data-route="contact" class="navlink px-3 py-2 rounded-xl bg-sky-50 text-slate-800">Contact Us</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="flex-1 overflow-auto nice-scroll">
+      <!-- Content header -->
+      <div class="sticky top-0 z-30 bg-white/70 backdrop-blur border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 text-white inline-flex items-center justify-center">
+              <span id="pageEmoji">🏠</span>
+            </div>
+            <h1 id="pageTitle" class="text-lg sm:text-xl font-extrabold text-slate-900">Home</h1>
+          </div>
+          <div class="hidden sm:flex items-center gap-3">
+            <a data-route="rewards" class="navlink px-3 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">Green Rewards</a>
+            <a data-route="verify" class="navlink px-3 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700">Start Verification</a>
+          </div>
+        </div>
+        <!-- Global slim progress -->
+        <div class="h-[6px] bg-slate-100">
+          <div id="headerProgress" class="h-full w-0 bg-gradient-to-r from-emerald-500 to-sky-500 transition-all"></div>
+        </div>
+      </div>
+
+      <!-- PAGES -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- HOME: Awareness + Difference + Stories + Fraud -->
+        <section data-page="home" class="space-y-8 fade-in">
+          <!-- Awareness Hero -->
+          <div class="grid lg:grid-cols-5 gap-6">
+            <div class="lg:col-span-3 rounded-3xl p-6 sm:p-8 bg-white border border-sky-100">
+              <span class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">
+                🌱 Verify DBT account, earn a green seed kit!
+              </span>
+              <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900">DBT Awareness & Verification Portal</h2>
+              <p class="mt-2 text-slate-700">
+                DBT (Direct Benefit Transfer) sends scholarships and benefits straight to your bank. This dashboard helps you learn, verify, and get rewarded—simple, safe, and student-friendly.
+              </p>
+              <div class="mt-5 flex flex-wrap gap-3">
+                <button data-route="verify" class="navlink inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-sky-600 text-white hover:bg-sky-700">
+                  Start Verification
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+                <button data-route="how" class="navlink inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+                  Learn More
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
+                </button>
+                <button data-route="contact" class="navlink inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+                  Contact Support
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </button>
+              </div>
+              <div class="mt-5 grid sm:grid-cols-3 gap-3 text-sm">
+                <div class="flex items-center gap-2 bg-sky-50 border border-sky-100 rounded-xl px-3 py-2">
+                  <span class="h-2 w-2 rounded-full bg-sky-500"></span> OTP login (demo)
+                </div>
+                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                  <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Encrypted uploads (simulated)
+                </div>
+                <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2">
+                  <span class="h-2 w-2 rounded-full bg-indigo-500"></span> One-time tokens
+                </div>
+              </div>
+            </div>
+            <!-- Visual card -->
+            <div class="lg:col-span-2 rounded-3xl p-1 bg-gradient-to-br from-sky-500 to-emerald-500">
+              <div class="rounded-3xl bg-white p-6 h-full">
+                <p class="font-semibold text-slate-900">Why DBT?</p>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  <li class="flex gap-3"><span>✅</span> Faster scholarship credits</li>
+                  <li class="flex gap-3"><span>✅</span> Direct to your bank</li>
+                  <li class="flex gap-3"><span>✅</span> Transparent tracking</li>
+                </ul>
+                <div class="mt-4 h-24 rounded-2xl bg-gradient-to-br from-emerald-50 to-sky-50 border border-slate-100 flex items-center justify-center">
+                  <span class="text-slate-700 text-sm">DBT-ready: 3 easy steps</span>
+                </div>
+                <div class="mt-4">
+                  <button id="markAwarenessBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+                    Mark awareness read
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Difference: DBT-enabled vs Aadhaar-seeded -->
+          <div class="rounded-3xl bg-white border border-slate-100 p-6 sm:p-8">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-sky-100 text-sky-700 inline-flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4-9 4-9-4z"/><path d="M21 10l-9 4-9-4v6l9 4 9-4z"/></svg>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">DBT-enabled vs Aadhaar-seeded (linked) account</h3>
+            </div>
+            <div class="mt-6 grid md:grid-cols-2 gap-5">
+              <div class="rounded-2xl p-5 bg-sky-50 border border-sky-100">
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10.6 13.4l3.8-3.8a3 3 0 00-4.2-4.2L7 8.6a3 3 0 004.2 4.2z"/>
+                    <path d="M13.4 10.6l-3.8 3.8a3 3 0 104.2 4.2l3.2-3.2a3 3 0 10-4.2-4.2z"/>
+                  </svg>
+                  <p class="font-semibold text-slate-900">Aadhaar-seeded (linked)</p>
+                </div>
+                <p class="mt-2 text-sm text-slate-700">Your Aadhaar is mapped to a bank account in NPCI records. This is the link.</p>
+                <ul class="mt-3 text-sm text-slate-700 list-disc pl-5">
+                  <li>Bank/branch or app can show “Aadhaar mapper” status</li>
+                  <li>May not be the account used for DBT yet</li>
+                </ul>
+              </div>
+              <div class="rounded-2xl p-5 bg-emerald-50 border border-emerald-100">
+                <div class="flex items-center gap-3">
+                  <svg class="w-6 h-6 text-emerald-700" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l6 3v5c0 4-2.7 6.5-6 8-3.3-1.5-6-4-6-8V5l6-3z"/>
+                    <path d="M9 9h4.5a2 2 0 010 4H9l5 5H12l-5-5h2.5a2 2 0 000-4H7.8L9 9z" fill="#065f46"/>
+                  </svg>
+                  <p class="font-semibold text-slate-900">DBT-enabled</p>
+                </div>
+                <p class="mt-2 text-sm text-slate-700">The Aadhaar-mapped account is set as the primary/default for receiving benefits like scholarships.</p>
+                <ul class="mt-3 text-sm text-slate-700 list-disc pl-5">
+                  <li>Ensures your scholarship credits go to this account</li>
+                  <li>Set via bank/NPCI mapper as “primary”</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success + Fraud row -->
+          <div class="grid lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 rounded-3xl bg-white border border-slate-100 p-6">
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-slate-900">Student Success</h3>
+                <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">Real impact</span>
+              </div>
+              <div id="storiesGrid" class="mt-4 grid sm:grid-cols-3 gap-4"></div>
+            </div>
+            <div class="rounded-3xl bg-white border border-slate-100 p-6">
+              <h3 class="text-lg font-extrabold text-slate-900">Fraud Prevention</h3>
+              <ul class="mt-3 space-y-3 text-sm">
+                <li class="flex gap-3"><span class="h-7 w-7 rounded-lg bg-rose-100 text-rose-700 inline-flex items-center justify-center">!</span> Never share OTP or tokens</li>
+                <li class="flex gap-3"><span class="h-7 w-7 rounded-lg bg-amber-100 text-amber-700 inline-flex items-center justify-center">🔒</span> Use official apps/sites only</li>
+                <li class="flex gap-3"><span class="h-7 w-7 rounded-lg bg-sky-100 text-sky-700 inline-flex items-center justify-center">₹</span> No “processing fee” is needed</li>
+                <li class="flex gap-3"><span class="h-7 w-7 rounded-lg bg-emerald-100 text-emerald-700 inline-flex items-center justify-center">📞</span> Report suspicious calls to your bank</li>
+              </ul>
+              <a data-route="faqs" class="navlink inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800">FAQs</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section data-page="how" class="hidden space-y-6 fade-in">
+          <div class="rounded-3xl bg-white border border-sky-100 p-6 sm:p-8">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-sky-100 text-sky-700 inline-flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zM4 11h10v2H4zM4 16h16v2H4z"/></svg>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">How It Works</h3>
+            </div>
+            <p class="mt-2 text-slate-700">Follow these simple steps to become DBT-ready.</p>
+
+            <div class="mt-6 grid lg:grid-cols-2 gap-6">
+              <!-- Guide: Linkage -->
+              <div class="rounded-2xl p-5 bg-sky-50 border border-sky-100">
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-9 rounded-lg bg-sky-200 text-sky-800 inline-flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4-9 4-9-4z"/><path d="M21 10l-9 4-9-4v6l9 4 9-4z"/></svg>
+                  </div>
+                  <p class="font-semibold text-slate-900">Check/Update Aadhaar–bank linkage</p>
+                </div>
+                <ol class="mt-3 space-y-2 text-sm text-slate-700">
+                  <li>Ask your bank for “Aadhaar NPCI mapper status” via app or branch</li>
+                  <li>Confirm your scholarship account is set as <span class="font-semibold">primary</span></li>
+                  <li>Save a screenshot/acknowledgment for records</li>
+                </ol>
+                <div class="mt-4 flex flex-wrap gap-3">
+                  <a href="https://www.npci.org.in/what-we-do/national-automated-clearing-house-nach/aadhaar-mapper" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700">
+                    Bank/NPCI help
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M7 7h10v10"/></svg>
+                  </a>
+                  <button data-mark-step="linkage" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+                    Mark as done
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Guide: Fallback upload -->
+              <div class="rounded-2xl p-5 bg-emerald-50 border border-emerald-100">
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-9 rounded-lg bg-emerald-200 text-emerald-800 inline-flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l5 5h-3v5h-4V7H7z"/><path d="M6 14h12v6H6z"/></svg>
+                  </div>
+                  <p class="font-semibold text-slate-900">Fallback: Upload proof securely (Demo)</p>
+                </div>
+                <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                  <li>Use only when live API is unavailable</li>
+                  <li>Real systems encrypt on your device with one-time tokens</li>
+                  <li>This demo never uploads files</li>
+                </ul>
+                <div class="mt-3 rounded-xl bg-white p-4 border border-emerald-100">
+                  <label class="block text-sm font-medium text-slate-800 mb-2">Select a sample document (Demo only)</label>
+                  <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative grow">
+                      <input id="proofFile" type="file" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300" />
+                      <p id="fileName" class="mt-2 text-xs text-slate-600">No file selected</p>
+                    </div>
+                    <button id="encryptUploadBtn" class="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                      Simulate secure upload
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                  </div>
+                  <div id="uploadStatus" class="mt-2 text-sm text-emerald-700 hidden">Encrypting locally…</div>
+                  <p class="mt-2 text-[11px] text-slate-500">Demo only. Nothing is uploaded.</p>
+                </div>
+                <div class="mt-3">
+                  <button data-mark-step="proof" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+                    Mark as done
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VERIFY NOW -->
+        <section data-page="verify" class="hidden space-y-6 fade-in">
+          <div class="grid lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 rounded-3xl bg-white border border-slate-100 p-6 sm:p-8">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-700 inline-flex items-center justify-center">
+                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm3 18h4v-1h-4v1z"/></svg>
+                </div>
+                <div>
+                  <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">Verify Now (Demo)</h3>
+                  <p class="text-sm text-slate-700">Shows the idea of one-time tokens and OTP without collecting personal data.</p>
+                </div>
+              </div>
+
+              <div class="mt-5 grid md:grid-cols-2 gap-5">
+                <!-- Token -->
+                <div class="rounded-2xl border border-slate-200 p-4">
+                  <p class="font-semibold text-slate-900">Step 1: Generate one-time token</p>
+                  <p class="mt-1 text-sm text-slate-700">We’ll create a random token that expires quickly.</p>
+                  <button id="genTokenBtn" class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700">
+                    Generate token
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                  </button>
+                  <div id="tokenBox" class="mt-3 hidden">
+                    <div class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-sky-50 text-sky-800 border border-sky-100">
+                      Token: <span id="tokenValue" class="font-mono font-semibold"></span>
+                    </div>
+                    <div class="mt-1 text-xs text-slate-500" id="tokenTimer"></div>
+                  </div>
+                </div>
+
+                <!-- OTP -->
+                <div class="rounded-2xl border border-slate-200 p-4">
+                  <p class="font-semibold text-slate-900">Step 2: Simulate OTP</p>
+                  <p class="mt-1 text-sm text-slate-700">Pretend we sent an OTP to your masked number.</p>
+                  <div class="flex flex-wrap gap-3 mt-3">
+                    <button id="sendOtpBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700">
+                      Send demo OTP
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    </button>
+                    <button id="verifyOtpBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50" disabled>
+                      Auto-verify
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>
+                    </button>
+                  </div>
+                  <div id="otpStatus" class="mt-3 text-sm text-slate-700"></div>
+                </div>
+              </div>
+
+              <div class="mt-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-sky-50 border border-emerald-100 p-4">
+                <p class="text-sm text-slate-800">Security highlights (real systems): OTP login, one-time tokens, and encrypted uploads protect your data. This page is a safe demo.</p>
+              </div>
+            </div>
+
+            <!-- Tips -->
+            <aside class="lg:col-span-1 rounded-3xl bg-white border border-slate-100 p-6 sm:p-8">
+              <h4 class="text-lg font-extrabold text-slate-900">Quick Tips</h4>
+              <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                <li>Use your bank app to view Aadhaar mapper status</li>
+                <li>Set your scholarship account as primary</li>
+                <li>Keep a copy of acknowledgement</li>
+              </ul>
+              <a data-route="how" class="navlink inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700">How It Works</a>
+            </aside>
+          </div>
+        </section>
+
+        <!-- FAQs -->
+        <section data-page="faqs" class="hidden space-y-6 fade-in">
+          <div class="rounded-3xl bg-white border border-slate-100 p-6 sm:p-8">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-sky-100 text-sky-700 inline-flex items-center justify-center">?</div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">FAQs</h3>
+            </div>
+            <div class="mt-4 space-y-3">
+              <details class="group rounded-xl border border-slate-200 p-4">
+                <summary class="cursor-pointer flex items-center justify-between">
+                  <span class="font-semibold text-slate-900">What is DBT?</span>
+                  <span class="ml-4 text-slate-500 group-open:rotate-180 transition-transform">⌄</span>
+                </summary>
+                <p class="mt-2 text-sm text-slate-700">Direct Benefit Transfer pays scholarships directly to your verified bank account.</p>
+              </details>
+              <details class="group rounded-xl border border-slate-200 p-4">
+                <summary class="cursor-pointer flex items-center justify-between">
+                  <span class="font-semibold text-slate-900">Aadhaar-seeded vs DBT-enabled?</span>
+                  <span class="ml-4 text-slate-500 group-open:rotate-180 transition-transform">⌄</span>
+                </summary>
+                <p class="mt-2 text-sm text-slate-700">Aadhaar-seeded means your Aadhaar is mapped to an account. DBT-enabled means that mapped account is set as the default for benefits.</p>
+              </details>
+              <details class="group rounded-xl border border-slate-200 p-4">
+                <summary class="cursor-pointer flex items-center justify-between">
+                  <span class="font-semibold text-slate-900">Is upload secure?</span>
+                  <span class="ml-4 text-slate-500 group-open:rotate-180 transition-transform">⌄</span>
+                </summary>
+                <p class="mt-2 text-sm text-slate-700">Production systems encrypt files on your device and send with a one-time token. This dashboard only simulates the flow.</p>
+              </details>
+            </div>
+          </div>
+
+          <!-- Chat shortcut -->
+          <div class="rounded-3xl bg-white border border-slate-100 p-6">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-700 inline-flex items-center justify-center">💬</div>
+              <h4 class="text-lg font-extrabold text-slate-900">Chatbot & Help</h4>
+            </div>
+            <p class="mt-2 text-sm text-slate-700">Tap a quick question:</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button class="quickQ px-3 py-2 rounded-full bg-sky-50 text-sky-700 border border-sky-100 text-xs">How to set primary?</button>
+              <button class="quickQ px-3 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs">What is DBT?</button>
+              <button class="quickQ px-3 py-2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs">Is OTP safe?</button>
+            </div>
+            <div id="helpAnswer" class="mt-3 text-sm text-slate-800"></div>
+          </div>
+        </section>
+
+        <!-- REWARDS -->
+        <section data-page="rewards" class="hidden space-y-6 fade-in">
+          <div class="grid lg:grid-cols-2 gap-6">
+            <div class="rounded-3xl bg-emerald-50 border border-emerald-100 p-6 sm:p-8">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-emerald-200 text-emerald-800 inline-flex items-center justify-center">🌿</div>
+                <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">Green Rewards</h3>
+              </div>
+              <p class="mt-2 text-slate-700">Complete verification steps to claim a seed kit. Grow, share, inspire!</p>
+
+              <div class="mt-5 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-900">Reward Progress</span>
+                  <span id="rewardBadge" class="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">0 / 3 steps</span>
+                </div>
+                <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div id="rewardBar" class="h-full w-0 bg-gradient-to-r from-emerald-500 to-sky-500 transition-all"></div>
+                </div>
+              </div>
+
+              <div class="mt-5 grid grid-cols-3 gap-3">
+                <div class="rounded-2xl bg-white p-4 border border-emerald-100 flex flex-col items-center text-center">
+                  <svg class="w-12 h-12 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12l-2 18H8L6 2z"/><circle cx="12" cy="10" r="3" fill="#16a34a"/></svg>
+                  <p class="mt-2 text-sm font-semibold">Seed Pack</p>
+                </div>
+                <div class="rounded-2xl bg-white p-4 border border-emerald-100 flex flex-col items-center text-center">
+                  <svg class="w-12 h-12 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l5 4v12l-5 4-5-4V6z"/><path d="M12 8c2 0 4 1.5 4 3.5S14 15 12 15s-4-1.5-4-3.5S10 8 12 8z" fill="#16a34a"/></svg>
+                  <p class="mt-2 text-sm font-semibold">Cocopeat</p>
+                </div>
+                <div class="rounded-2xl bg-white p-4 border border-emerald-100 flex flex-col items-center text-center">
+                  <svg class="w-12 h-12 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20h16v2H4z"/><path d="M7 20L12 4l5 16"/></svg>
+                  <p class="mt-2 text-sm font-semibold">Grow Guide</p>
+                </div>
+              </div>
+
+              <div class="mt-5 flex flex-wrap gap-3">
+                <button id="claimRewardBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50">
+                  Claim Seed Kit (Demo)
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>
+                </button>
+                <button data-route="verify" class="navlink inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700">
+                  Complete Steps
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+              <p id="claimMsg" class="mt-2 text-sm text-emerald-800 hidden">Nice! Your demo claim is recorded. In a real portal, you’d get a confirmation code.</p>
+            </div>
+
+            <!-- Hashtag Gallery -->
+            <div class="rounded-3xl bg-white border border-sky-100 p-6 sm:p-8">
+              <div class="flex items-center justify-between">
+                <h4 class="text-lg font-extrabold text-slate-900">#GreenDBT Gallery</h4>
+                <span class="text-sky-700">#DBTReady</span>
+              </div>
+              <div class="mt-4 grid grid-cols-3 gap-3">
+                <div class="rounded-2xl h-28 bg-gradient-to-br from-emerald-200 to-sky-200 p-3 flex flex-col justify-between">
+                  <span class="text-xs text-slate-700">#GreenDBT</span><span class="text-sm font-semibold text-slate-900">Sprout day 3 🌱</span>
+                </div>
+                <div class="rounded-2xl h-28 bg-gradient-to-br from-sky-200 to-indigo-200 p-3 flex flex-col justify-between">
+                  <span class="text-xs text-slate-700">#StudyAndSustain</span><span class="text-sm font-semibold text-slate-900">Balcony basil!</span>
+                </div>
+                <div class="rounded-2xl h-28 bg-gradient-to-br from-emerald-200 to-lime-200 p-3 flex flex-col justify-between">
+                  <span class="text-xs text-slate-700">#DBTReady</span><span class="text-sm font-semibold text-slate-900">Seed kit unboxed</span>
+                </div>
+                <div class="rounded-2xl h-28 bg-gradient-to-br from-sky-200 to-cyan-200 p-3 flex flex-col justify-between">
+                  <span class="text-xs text-slate-700">#GreenDBT</span><span class="text-sm font-semibold text-slate-900">Team hostel garden</span>
+                </div>
+                <div class="rounded-2xl h-28 bg-gradient-to-br from-emerald-200 to-teal-200 p-3 flex flex-col justify-between">
+                  <span class="text-xs text-slate-700">#DBTReady</span><span class="text-sm font-semibold text-slate-900">Mint progress</span>
+                </div>
+                <div class="rounded-2xl h-28 bg-gradient-to-br from-lime-200 to-emerald-100 p-3 flex flex-col justify-between">
+                  <span class="text-xs text-slate-700">#StudyAndSustain</span><span class="text-sm font-semibold text-slate-900">Chilli saplings 🌶️</span>
+                </div>
+              </div>
+              <p class="mt-3 text-xs text-slate-600">Share with #GreenDBT to get featured.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section data-page="contact" class="hidden space-y-6 fade-in">
+          <div class="rounded-3xl bg-white border border-slate-100 p-6 sm:p-8">
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">Contact Us</h3>
+            <p class="mt-1 text-slate-700">Need help? Our student support team is here for you.</p>
+            <div class="mt-3 text-sm text-slate-700">Email: <span class="font-semibold">support@dbt.example.in</span></div>
+            <div class="mt-4 flex flex-wrap gap-3">
+              <button id="copyEmailBtn" class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+                Copy email
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 7h8v10H8zM5 10h2v8H5zM17 10h2v8h-2z"/></svg>
+              </button>
+              <button data-route="faqs" class="navlink inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-sky-600 text-white hover:bg-sky-700">
+                Get Answers
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+            <p class="mt-4 text-xs text-slate-600">Note: This is a demo interface. Do not share personal information.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="rounded-3xl bg-gradient-to-br from-sky-600 to-emerald-600 text-white p-6 sm:p-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <p class="text-lg font-semibold">Stay DBT-ready. Grow green. 💚</p>
+              <div class="flex items-center gap-3">
+                <button data-route="home" class="navlink px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">Home</button>
+                <button data-route="verify" class="navlink px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">Verify Now</button>
+                <button data-route="rewards" class="navlink px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">Green Rewards</button>
+              </div>
+            </div>
+            <p class="mt-4 text-xs text-white/80">© 2025 DBT Awareness (Demo)</p>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Floating Chat -->
+  <button id="chatBtn" aria-label="Open help chat" class="fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 pulse">
+    💬
+  </button>
+  <div id="chatPanel" class="hidden fixed bottom-24 right-5 z-50 w-[22rem] max-w-[90vw] rounded-2xl border border-slate-200 bg-white shadow-xl">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+      <div class="flex items-center gap-2">
+        <span class="h-8 w-8 rounded-xl bg-emerald-100 inline-flex items-center justify-center">🤖</span>
+        <p class="font-semibold">Student Help</p>
+      </div>
+      <button id="chatClose" class="h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200">✕</button>
+    </div>
+    <div class="p-4 space-y-3 max-h-72 overflow-auto nice-scroll" id="chatMessages" aria-live="polite">
+      <div class="text-sm text-slate-700">Hi! I’m your DBT helper. Ask about DBT, Aadhaar linkage, rewards, or fraud safety.</div>
+    </div>
+    <div class="p-3 border-t border-slate-100 space-y-2">
+      <div class="flex flex-wrap gap-2">
+        <button class="chip px-3 py-2 rounded-full bg-sky-50 text-sky-700 border border-sky-100 text-xs">What is DBT?</button>
+        <button class="chip px-3 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs">DBT-enabled vs seeded</button>
+        <button class="chip px-3 py-2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs">Fraud tips</button>
+      </div>
+      <form id="chatForm" class="flex items-center gap-2">
+        <label for="chatInput" class="sr-only">Type your question</label>
+        <input id="chatInput" type="text" autocomplete="off" placeholder="Type your question..." class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-300" />
+        <button id="chatSend" type="submit" class="shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+          Send
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        </button>
+      </form>
+      <p class="text-[11px] text-slate-500">Demo chatbot. Don’t share personal details here.</p>
+    </div>
+  </div>
+
+  <script>
+    // SPA routing
+    const pages = document.querySelectorAll('[data-page]');
+    const pageMeta = {
+      home: { title: 'Home', emoji: '🏠' },
+      how: { title: 'How It Works', emoji: '📋' },
+      verify: { title: 'Verify Now', emoji: '✅' },
+      faqs: { title: 'FAQs', emoji: '❓' },
+      rewards: { title: 'Green Rewards', emoji: '🌿' },
+      contact: { title: 'Contact Us', emoji: '📮' }
+    };
+    function showPage(name) {
+      pages.forEach(sec => sec.classList.toggle('hidden', sec.dataset.page !== name));
+      const meta = pageMeta[name] || pageMeta.home;
+      document.getElementById('pageTitle').textContent = meta.title;
+      document.getElementById('pageEmoji').textContent = meta.emoji;
+      // Close mobile menu after selection
+      mobileMenu?.classList.add('hidden');
+      window.location.hash = name;
+    }
+    function initRoute() {
+      const hash = window.location.hash.replace('#','');
+      showPage(pageMeta[hash] ? hash : 'home');
+    }
+    window.addEventListener('hashchange', initRoute);
+
+    // Nav link wiring
+    document.querySelectorAll('.navlink').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const r = el.getAttribute('data-route');
+        if (r) { e.preventDefault(); showPage(r); }
+      });
+    });
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Sidebar visibility on desktop (already shown). On very small screens, sidebar hidden.
+
+    // Progress tracking (3 steps total)
+    const stepsDone = new Set();
+    const headerProgress = document.getElementById('headerProgress');
+    const sidebarProgress = document.getElementById('sidebarProgress');
+    const sidebarProgressLabel = document.getElementById('sidebarProgressLabel');
+    const rewardBar = document.getElementById('rewardBar');
+    const rewardBadge = document.getElementById('rewardBadge');
+    const claimRewardBtn = document.getElementById('claimRewardBtn');
+    const claimMsg = document.getElementById('claimMsg');
+
+    function updateProgressUI() {
+      const total = 3;
+      const count = Math.min(total, stepsDone.size);
+      const pct = (count / total) * 100;
+      headerProgress.style.width = pct + '%';
+      sidebarProgress.style.width = pct + '%';
+      sidebarProgressLabel.textContent = count + '/' + total + ' steps';
+      if (rewardBar) rewardBar.style.width = pct + '%';
+      if (rewardBadge) rewardBadge.textContent = count + ' / ' + total + ' steps';
+      if (claimRewardBtn) claimRewardBtn.disabled = count < total;
+    }
+    updateProgressUI();
+
+    // Awareness mark button
+    const markAwarenessBtn = document.getElementById('markAwarenessBtn');
+    markAwarenessBtn?.addEventListener('click', () => {
+      stepsDone.add('awareness');
+      updateProgressUI();
+      markAwarenessBtn.textContent = 'Marked ✓';
+      markAwarenessBtn.classList.add('bg-emerald-700');
+    });
+
+    // File upload simulation
+    const proofFile = document.getElementById('proofFile');
+    const fileName = document.getElementById('fileName');
+    const encryptUploadBtn = document.getElementById('encryptUploadBtn');
+    const uploadStatus = document.getElementById('uploadStatus');
+    let fileSelected = null;
+    proofFile?.addEventListener('change', (e) => {
+      const f = e.target.files[0];
+      fileSelected = f || null;
+      if (fileName) fileName.textContent = f ? f.name : 'No file selected';
+      if (encryptUploadBtn) encryptUploadBtn.disabled = !fileSelected;
+    });
+    encryptUploadBtn?.addEventListener('click', () => {
+      if (!fileSelected) return;
+      uploadStatus.classList.remove('hidden');
+      uploadStatus.textContent = 'Encrypting locally…';
+      setTimeout(() => {
+        uploadStatus.textContent = 'Creating one-time token…';
+        setTimeout(() => {
+          uploadStatus.textContent = 'Simulated upload complete. (Demo only)';
+          stepsDone.add('proof');
+          updateProgressUI();
+        }, 800);
+      }, 800);
+    });
+
+    // Verify: token + OTP
+    const genTokenBtn = document.getElementById('genTokenBtn');
+    const tokenBox = document.getElementById('tokenBox');
+    const tokenValue = document.getElementById('tokenValue');
+    const tokenTimer = document.getElementById('tokenTimer');
+    let tokenExpiryAt = 0;
+    let tokenTimerId = null;
+
+    function makeToken() {
+      const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      let t = '';
+      for (let i = 0; i < 6; i++) t += chars[Math.floor(Math.random() * chars.length)];
+      return t;
+    }
+    function startTokenTimer() {
+      if (tokenTimerId) clearInterval(tokenTimerId);
+      tokenTimerId = setInterval(() => {
+        const now = Date.now();
+        const remain = Math.max(0, Math.floor((tokenExpiryAt - now) / 1000));
+        tokenTimer.textContent = remain + 's left';
+        if (remain <= 0) {
+          clearInterval(tokenTimerId);
+          tokenTimer.textContent = 'Expired. Generate again.';
+        }
+      }, 250);
+    }
+    genTokenBtn?.addEventListener('click', () => {
+      const t = makeToken();
+      tokenValue.textContent = t;
+      tokenBox.classList.remove('hidden');
+      tokenExpiryAt = Date.now() + 30000;
+      startTokenTimer();
+      stepsDone.add('token');
+      updateProgressUI();
+    });
+
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const otpStatus = document.getElementById('otpStatus');
+    let otpSent = false;
+
+    sendOtpBtn?.addEventListener('click', () => {
+      otpSent = true;
+      otpStatus.textContent = 'OTP sent to •••• ••123 (demo).';
+      verifyOtpBtn.disabled = false;
+    });
+    verifyOtpBtn?.addEventListener('click', () => {
+      if (!otpSent) return;
+      otpStatus.textContent = 'Verified successfully (demo). Your account is DBT-ready.';
+      stepsDone.add('otp');
+      updateProgressUI();
+    });
+
+    // Rewards claim
+    claimRewardBtn?.addEventListener('click', () => {
+      claimMsg.classList.remove('hidden');
+    });
+
+    // Success stories render + rotate
+    const stories = [
+      { name: 'Aarav • Pune', text: 'Got my scholarship on time after setting DBT-enabled. Easy steps!', color: 'from-sky-50 to-white' },
+      { name: 'Meera • Chennai', text: 'Branch helped set primary account. Now I track it easily.', color: 'from-emerald-50 to-white' },
+      { name: 'Kabir • Jaipur', text: 'The guide made the difference. Earned my seed kit too!', color: 'from-indigo-50 to-white' },
+    ];
+    const storiesGrid = document.getElementById('storiesGrid');
+    function renderStories() {
+      if (!storiesGrid) return;
+      storiesGrid.innerHTML = '';
+      stories.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'rounded-2xl border border-slate-100 bg-gradient-to-br ' + s.color + ' p-5 h-full';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-sky-500 text-white inline-flex items-center justify-center font-bold">${s.name.charAt(0)}</div>
+            <div class="font-semibold text-slate-900">${s.name}</div>
+          </div>
+          <p class="mt-3 text-sm text-slate-800">“${s.text}”</p>
+          <div class="mt-3 text-amber-500">★★★★★</div>
+        `;
+        storiesGrid.appendChild(card);
+      });
+    }
+    renderStories();
+    setInterval(() => { stories.push(stories.shift()); renderStories(); }, 7000);
+
+    // Chat
+    const chatBtn = document.getElementById('chatBtn');
+    const chatPanel = document.getElementById('chatPanel');
+    const chatClose = document.getElementById('chatClose');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+
+    function openChat(){ chatPanel.classList.remove('hidden'); chatInput?.focus(); }
+    function closeChat(){ chatPanel.classList.add('hidden'); }
+    chatBtn.addEventListener('click', openChat);
+    chatClose.addEventListener('click', closeChat);
+
+    function addMsg(text, from='bot') {
+      const m = document.createElement('div');
+      m.className = from === 'bot'
+        ? 'text-sm text-slate-800 bg-slate-50 border border-slate-100 p-3 rounded-xl'
+        : 'text-sm text-white bg-emerald-600 p-3 rounded-xl ml-auto max-w-[85%]';
+      m.textContent = text;
+      chatMessages.appendChild(m);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function botReply(q){
+      const t = q.toLowerCase();
+      if (t.includes('what is dbt') || t.includes('dbt?')) return 'DBT (Direct Benefit Transfer) sends scholarships and benefits straight to your verified bank account.';
+      if (t.includes('seeded') || t.includes('linked')) return 'Aadhaar-seeded means your Aadhaar is mapped to an account. DBT-enabled means that mapped account is set as the default for receiving benefits.';
+      if (t.includes('dbt-enabled') || t.includes('primary')) return 'DBT-enabled = your Aadhaar-mapped account set as primary for payments like scholarships. Ask your bank to mark it primary in NPCI mapper.';
+      if (t.includes('secure') || t.includes('upload')) return 'In real systems, files are encrypted on your device and sent with a one-time token. This demo only simulates the flow.';
+      if (t.includes('fraud') || t.includes('otp')) return 'Safety: Never share OTP or tokens, use official apps/sites, and avoid any “processing fee” requests.';
+      if (t.includes('reward') || t.includes('seed kit')) return 'Finish the 3 steps in Verify/How It Works to unlock the seed kit claim.';
+      return 'I can help with DBT basics, Aadhaar linkage, DBT-enabled, secure uploads, fraud safety, and rewards. Try asking: “How to set primary?”';
+    }
+
+    chatForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = chatInput.value.trim();
+      if (!q) return;
+      addMsg(q, 'user');
+      chatInput.value = '';
+      setTimeout(() => addMsg(botReply(q), 'bot'), 300);
+    });
+
+    document.querySelectorAll('.chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.textContent.trim();
+        addMsg(label, 'user');
+        setTimeout(() => {
+          if (label.includes('DBT-enabled')) {
+            addMsg('DBT-enabled means your Aadhaar-mapped account is set as the default for receiving benefits like scholarships.', 'bot');
+          } else if (label.includes('Secure upload')) {
+            addMsg('In production, files are encrypted on your device and sent with a one-time token. This demo does not upload.', 'bot');
+          } else {
+            addMsg('Fraud tips: Never share OTPs, check official URLs, and avoid any “processing fee” requests.', 'bot');
+          }
+        }, 250);
+      });
+    });
+
+    // FAQ quick answers
+    document.querySelectorAll('.quickQ').forEach(b => {
+      b.addEventListener('click', () => {
+        const ans = document.getElementById('helpAnswer');
+        if (!ans) return;
+        if (b.textContent.includes('primary')) {
+          ans.textContent = 'Ask your bank to set your scholarship account as primary in the Aadhaar mapper. Re-check status afterward.';
+        } else if (b.textContent.includes('What is DBT')) {
+          ans.textContent = 'DBT (Direct Benefit Transfer) sends funds directly to your verified bank account.';
+        } else {
+          ans.textContent = 'OTP is safe when used in trusted apps/sites. Never share it with anyone.';
+        }
+      });
+    });
+
+    // Copy email
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+    copyEmailBtn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText('support@dbt.example.in');
+        copyEmailBtn.textContent = 'Email copied ✓';
+        setTimeout(() => (copyEmailBtn.textContent = 'Copy email'), 1500);
+      } catch {
+        alert('Copy not available. Please copy manually: support@dbt.example.in');
+      }
+    });
+
+    // Accessibility: ESC closes chat
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeChat(); });
+
+    // Init route
+    initRoute();
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9830a55a84aa7f65',t:'MTc1ODUzMTk4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
